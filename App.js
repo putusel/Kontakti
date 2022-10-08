@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, listSeparator } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, Dimensions } from 'react-native';
 import * as Contacts from'expo-contacts';
 
 export default function App() {
-  const [contacts, setContacts] = useState([]);
+  const [currentContact, setCurrentContact] = useState({});
 
   const getContacts = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
@@ -14,7 +14,7 @@ export default function App() {
       })
 
       if (data.length > 0) {
-        setContacts([...data, { key: text }]);
+        setCurrentContact(data);
         console.log(data[0]);
       }
     }
@@ -23,24 +23,19 @@ export default function App() {
   return (
     <View style={styles.container}>
       <FlatList style={styles.list}
-          data={contacts}
+          data={currentContact}
           renderItem={({ item }) =>
-        <View> 
-          <Text 
-            style={{fontSize:16, fontWeight: "bold"}}>{item.firstName}
-          </Text>
-          <Text 
-          style={{fontSize:16, fontWeight: "bold"}}>{item.lastName}
-          </Text>
-          <Text 
-          style={{fontSize:16, fontWeight: "bold"}}>{item.phonenumbers.number}
-          </Text>
+        <View>
+          <Text> {item.name}, {item.phoneNumbers[0].number} </Text>
         </View>
-        }/>
-      <View style={styles.container} >
+          }
+        />
+      <View style={{ width:Dimensions.get("window").width * 0.9, flexDirection: 'row', justifyContent: 'center', marginBottom: 10}}>
         <Button title="Get contacts" onPress={getContacts} />
       </View>
+        
     </View>
+    
   );
 }
 
@@ -50,5 +45,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 60,
   },
+  
+  
 });
